@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body{
+            background-color: rgb(64, 63, 63);
+            color: white;
+        }
+    </style>
+</head>
+<body>  
+    <h1>Register here</h1>
+    <form action="" method="post" enctype="multipart/form-data">
+        <input type="text" name="name" placeholder="Enter name" required>
+        <br><br>
+        <input type="email" name="email" placeholder="Enter email" required>
+        <br><br>
+        <input type="file" name="image"  required>
+        <br><br>
+        <input type="password" name="password" placeholder="Enter password"  required>
+        <br><br>
+        <input type="submit" name="submit"  >
+        <br><br>
+
+    </form>
+        <% if (typeof message!=='undefined') { %>
+            <p style="color: greenyellow;"> <%= message %> </p>
+        <% } %>
+</body>
+</html>

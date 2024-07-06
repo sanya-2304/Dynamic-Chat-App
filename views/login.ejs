@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            background-color: rgb(64, 63, 63);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Login here</h1>
+    <% if (typeof message !== 'undefined') { %>
+        <h4 style="color: rgb(215, 127, 127);"> <%= message %> </h4>
+    <% } %>
+    <!-- Form submits to '/' for both GET and POST -->
+    <form action="/" method="post">
+        <input type="email" name="email" placeholder="Enter email" required>
+        <br><br>
+        <input type="password" name="password" placeholder="Enter password" required>
+        <br><br>
+        <input type="submit" name="submit">
+        <br><br>
+    </form>
+</body>
+</html>

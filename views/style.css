@@ -1,0 +1,108 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f8f9fa;
+  color: #333;
+}
+
+.wrapper {
+  display: flex;
+  align-items: stretch;
+}
+
+#sidebar {
+  min-width: 250px;
+  max-width: 250px;
+  background: #6d7fcc;
+  color: #fff;
+  transition: all 0.3s;
+}
+
+#sidebar .logo {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#sidebar ul.components {
+  padding: 20px 0;
+}
+
+#sidebar ul p {
+  padding: 10px;
+  font-size: 1.1em;
+  display: block;
+}
+
+#sidebar ul li a {
+  padding: 10px;
+  font-size: 1.1em;
+  display: block;
+  color: #fff;
+}
+
+#sidebar ul li a:hover {
+  background: #7386d5;
+  text-decoration: none;
+}
+
+#sidebar ul li.active > a,
+a[aria-expanded="true"] {
+  background: #6d7fcc;
+}
+
+#content {
+  width: 100%;
+  padding: 20px;
+  min-height: 100vh;
+  transition: all 0.3s;
+}
+
+.custom-menu {
+  text-align: center;
+}
+
+.btn-primary {
+  background: #6d7fcc;
+  border-color: #6d7fcc;
+}
+.cursor-pointer{
+  cursor:pointer;
+}
+
+#chat-container{
+  background-color: lightblue;
+  width:  200%;
+  height: 400px;
+  overflow: scroll;
+}
+
+.chat-section{
+  display: none;
+}
+.online-status{
+  color: rgb(116, 173, 31);
+}
+.offline-status{
+  color: goldenrod;
+}
+.current-user-chat{
+  text-align: right;
+  margin: 10px;
+  color: black;
+}
+.samne-wala-user-chat{
+  text-align: left;
+  margin: 10px;
+  color: black;
+}
+.fa-trash{
+  color: #3d52a9;
+}
+.sidebar{
+  padding: 20px;
+}
+.row{
+  padding: 20px;
+}
+.start-head{
+  padding: 20px;
+}
