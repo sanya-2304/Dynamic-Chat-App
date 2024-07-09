@@ -1,214 +1,304 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <title>Chat Dashboard</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/style.css"> <!-- Correctly linking CSS file -->
+    <link rel="stylesheet" href="/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js" integrity="sha512-VJ6+sp2E5rFQk05caiXXzQd1wBABpjEj1r5kMiLmGAAgwPItw1YpqsCCBtq8Yr1x6C49/mTpRdXtq8O2RcZhlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  </head>
-  <body>
+</head>
+<body>
     <div class="wrapper d-flex align-items-stretch">
-      <nav id="sidebar">
-        <div class="custom-menu">
-          <button type="button" id="sidebarCollapse" class="btn btn-primary">
-            <i class="fa fa-bars"></i>
-            <span class="sr-only">Toggle Menu</span>
-          </button>
-        </div>
-        <h1><a href="/" class="logo">Banter</a></h1>
-        <ul class="list-unstyled components mb-5">
-          <li class="active">
-            <a href="/dashboard"><span class="fa fa-home mr-3"></span> Home</a>
-          </li>
-          <li>
-            <a href="/logout"><span class="fa fa-sign-out mr-3"></span> Logout</a>
-          </li>
-        </ul>
-      </nav>
-      <br><br>
-      <div class="row">
-        <div class="col-md-3">
-          <ul class="list-group">
-            <% if (users.length > 0) { 
-              for(let i = 0; i < users.length; i++) { %> 
-              <li class="list-group-item list-group-item-dark cursor-pointer user-list" data-id="<%= users[i]['_id'] %>">
-                <img src="<%= 'http://localhost:1202/' + users[i]['image'] %>" alt="" width="50px" height="50px">
-                <%= users[i]['name'] %>
-                <% if(users[i]['is_online'] == 1) { %>  
-                <sup class="online-status" id="<%= users[i]['_id'] %>-status">Online</sup>
-                <% } else { %>   
-                <sup class="offline-status" id="<%= users[i]['_id'] %>-status">Offline</sup>  
-                <% } %>
-              </li> <% 
-              } 
-            } %>
-          </ul>
-        </div>
-        <div class="col-md-9">
-          <h3 class="start-head">Start chatting</h3>
-          <div class="chat-section" style="display: none;">
-            <div id="chat-container">
+        <nav id="sidebar">
+            <div class="custom-menu">
+                <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                    <i class="fa fa-bars"></i>
+                    <span class="sr-only">Toggle Menu</span>
+                </button>
             </div>
-              <form action="" id="chat-form">
-                <input type="text" name="message" placeholder="enter message" id="message" required class="inp">
-                <input type="submit" value="Send" class="btn btn-primary">
-              </form>
-            
-          </div>  
+            <h1><a href="/" class="logo">Banter</a></h1>
+            <ul class="list-unstyled components mb-5">
+                <li class="active">
+                    <a href="/dashboard"><span class="fa fa-home mr-3"></span> Home</a>
+                </li>
+                <li class="active">
+                    <a href="/groups"><span class="fa fa-group mr-3"></span> Groups</a>
+                </li>
+                <li>
+                    <a href="/logout"><span class="fa fa-sign-out mr-3"></span> Logout</a>
+                </li>
+            </ul>
+        </nav>
+        <br><br>
+        <div class="row">
+            <div class="col-md-3">
+                <ul class="list-group">
+                    <% if (users.length > 0) { 
+                        for(let i = 0; i < users.length; i++) { %> 
+                        <li class="list-group-item list-group-item-dark cursor-pointer user-list" data-id="<%= users[i]['_id'] %>">
+                            <img src="<%= 'http://localhost:1202/' + users[i]['image'] %>" alt="" width="50px" height="50px">
+                            <%= users[i]['name'] %>
+                            <% if(users[i]['is_online'] == 1) { %>  
+                            <sup class="online-status" id="<%= users[i]['_id'] %>-status">Online</sup>
+                            <% } else { %>   
+                            <sup class="offline-status" id="<%= users[i]['_id'] %>-status">Offline</sup>  
+                            <% } %>
+                        </li> <% 
+                        } 
+                    } %>
+                </ul>
+            </div>
+            <div class="col-md-9">
+                <h3 class="start-head">Start chatting</h3>
+                <div class="chat-section" style="display: none;">
+                    <div id="chat-container"></div>
+                    <form action="" id="chat-form">
+                        <input type="text" name="message" placeholder="enter message" id="message" required class="inp">
+                        <input type="submit" value="Send" class="btn btn-primary">
+                    </form>
+                </div>  
+            </div>
         </div>
-      </div>
-      <div id="content" class="p-4 p-md-5 pt-5">
-        <!-- Your dashboard content goes here -->
-      </div>
+        <div id="content" class="p-4 p-md-5 pt-5">
+            <!-- Your dashboard content goes here -->
+        </div>
     </div>
- 
 
-<!-- Modal -->
-<div class="modal fade" id="delChatModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="delChatModel">Delete chat</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form id="delchatform">
-      <div class="modal-body">
-        <input type="text" name="id" id="del-msg-id">
-        <p>Delete message confirm?</p>
-        <p><b id="delmsg"></b></p>
-        ...
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </form>
+    <!-- Modal -->
+    <div class="modal fade" id="delChatModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="delChatModel">Delete chat</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="delchatform">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="del-msg-id">
+                        <p>Delete message confirm?</p>
+                        <p><b id="delmsg"></b></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Not now</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editChatModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editChatModel">Edit chat</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="updatechatform">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="edit-msg-id">
+                        <input type="text" name="message" id="update-msg-id" required placeholder="Enter new message">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Not now</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="/js/popper.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/main.js"></script> <!-- Correctly linking JS file -->
+    <script src="/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script>
-      var sender_id = '<%= user._id %>';
-      var reciever_id;
-      var socket = io({
-        auth: {
-          token: '<%= user._id %>'
-        }
-      });
+      //multi-dynamic-chat-app
+      function getCookie(name) {
+	let matches = document.cookie.match(new RegExp(
+		"(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+	));
+	return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+var userData=JSON.parse(getCookie('user'))
+console.log('cookie-data is: ',userData);
 
-      $(document).ready(function() {
-        $('#sidebarCollapse').on('click', function() {
-          $('#sidebar').toggleClass('active');
-        });
-
-        $('.user-list').on('click', function() {
-          var userId = $(this).attr('data-id');
-          receiver_id = userId;
-          console.log('Receiver ID set to:', reciever_id);
-          $('.start-head').hide();
-          $('.chat-section').show();
-
-          socket.emit('existsChat', {sender_id:sender_id, receiver_id:receiver_id})
-        });
-      });
-
-      socket.on('getOnlineUser', function(data) {
-        $('#' + data.user_id + '-status').text('Online')
-          .removeClass('offline-status')
-          .addClass('online-status');
-      });
-
-      socket.on('getOfflineUser', function(data) {
-        $('#' + data.user_id + '-status').text('Offline')
-          .removeClass('online-status')
-          .addClass('offline-status');
-      });
-
-      // user chat save
-      $('#chat-form').submit(function(event) {
-        event.preventDefault();
-
-        var message = $('#message').val();
-        $.ajax({
-          url: '/save-chat',
-          type: 'POST',
-          data: { sender_id: sender_id, receiver_id: receiver_id, message: message },
-          success: function(response) {
-            if (response.success) {
-              console.log(response.data.message);
-              $('#message').val('');
-              let chat = response.data.message;
-              let html = `<div class="current-user-chat" id='`+response.data._id+`'><h5>` + chat + `
-                <i class="fa fa-trash" aria-hidden="true" data-id=id='`+response.data._id+` data-toggle="modal" data-target="#delChatModel"></i>
-                </h5></div>`;
-              $('#chat-container').append(html)
-              socket.emit('newChat', response.data)
-              scrollCheck()
-            } else {
-              alert(response.msg);
+        var sender_id = userData._id;
+        var receiver_id;
+        var socket = io({
+            auth: {
+                token: userData._id
             }
-          }
         });
-        
-      });
-      socket.on('loadnewchat', function(data){
-      //   console.log('loadnewchat received:', data); // Debugging log
-      // console.log('sender_id:', sender_id); // Debugging log
-      // console.log('reciever_id:', receiver_id); // Debugging log
-      // console.log('data.sender_id:', data.sender_id); // Debugging log
-      // console.log('data.reciever_id:', data.receiver_id); 
-       
 
-      if(sender_id===data.receiver_id && receiver_id===data.sender_id){
-        let html = `<div class="samne-wala-user-chat" id='`+data._id+`'><h5>` + data.message + `</h5></div>`;
-        $('#chat-container').append(html)
-      }
-      })
+        $(document).ready(function() {
+            $('#sidebarCollapse').on('click', function() {
+                $('#sidebar').toggleClass('active');
+            });
 
-      // load old chats
-      socket.on('loadChats', function(data){
-        $('#chat-container').html('')
-        var chats=data.chats
-        let html=''
-        for(let x=0;x<chats.length;x++){
-          let addClass=''
-          if(chats[x]['sender_id']==sender_id){
-          addClass='current-user-chat'}
-          else{
-            addClass='samne-wala-user-chat' }
-            
-              html+=`<div class='`+addClass+`' id='`+chats[x]['_id']+`'><h5>` + chats[x]['message'] + ``;
-                if(chats[x]['sender_id']==sender_id){
-                  html+=`<i class="fa fa-trash" aria-hidden="true" data-id=id='`+chats[x]['_id']+` data-toggle="modal" data-target="#delChatModel"></i>`}
+            $('.user-list').on('click', function() {
+                var userId = $(this).attr('data-id');
+                receiver_id = userId;
+                console.log('Receiver ID set to:', receiver_id);
+                $('.start-head').hide();
+                $('.chat-section').show();
 
-                html+=`
-                </h5></div>`;
+                socket.emit('existsChat', { sender_id: sender_id, receiver_id: receiver_id });
+            });
+        });
+
+        socket.on('getOnlineUser', function(data) {
+            $('#' + data.user_id + '-status').text('Online')
+                .removeClass('offline-status')
+                .addClass('online-status');
+        });
+
+        socket.on('getOfflineUser', function(data) {
+            $('#' + data.user_id + '-status').text('Offline')
+                .removeClass('online-status')
+                .addClass('offline-status');
+        });
+
+        // user chat save
+        $('#chat-form').submit(function(event) {
+            event.preventDefault();
+
+            var message = $('#message').val();
+            $.ajax({
+                url: '/save-chat',
+                type: 'POST',
+                data: { sender_id: sender_id, receiver_id: receiver_id, message: message },
+                success: function(response) {
+                    if (response.success) {
+                        console.log(response.data.message);
+                        $('#message').val('');
+                        let chat = response.data.message;
+                        let html = `<div class="current-user-chat" id='` + response.data._id + `'><h5><span>` + chat + `</span>
+                            <i class="fa fa-trash" aria-hidden="true" data-id='` + response.data._id + `' data-toggle="modal" data-target="#delChatModel"></i>
+                            <i class="fa fa-edit" aria-hidden="true" data-id='` + response.data._id + `' data-msg='` + chat + `' data-toggle="modal" data-target="#editChatModel"></i>
+                            </h5></div>`;
+                        $('#chat-container').append(html);
+                        socket.emit('newChat', response.data);
+                        scrollCheck();
+                    } else {
+                        alert(response.msg);
+                    }
+                }
+            });
+        });
+
+        socket.on('loadnewchat', function(data) {
+            if (sender_id === data.receiver_id && receiver_id === data.sender_id) {
+                let html = `<div class="samne-wala-user-chat" id='` + data._id + `'><h5><span>` + data.message + `</span></h5></div>`;
+                $('#chat-container').append(html);
+                scrollCheck();
+            }
+        });
+
+        // load old chats
+        socket.on('loadChats', function(data) {
+            $('#chat-container').html('');
+            var chats = data.chats;
+            let html = '';
+            for (let x = 0; x < chats.length; x++) {
+                let addClass = '';
+                if (chats[x]['sender_id'] == sender_id) {
+                    addClass = 'current-user-chat';
+                } else {
+                    addClass = 'samne-wala-user-chat';
+                }
+                html += `<div class='` + addClass + `' id='` + chats[x]['_id'] + `'><h5><span>` + chats[x]['message'] + `</span>`;
+                if (chats[x]['sender_id'] == sender_id) {
+                    html += `<i class="fa fa-trash" aria-hidden="true" data-id='` + chats[x]['_id'] + `' data-toggle="modal" data-target="#delChatModel"></i>
+                    <i class="fa fa-edit" aria-hidden="true" data-id='` + chats[x]['_id'] + `' data-msg='` + chats[x]['message'] + `' data-toggle="modal" data-target="#editChatModel"></i>`;
+                }
+                html += `</h5></div>`;
+            }
+            $('#chat-container').append(html);
+            scrollCheck();
+        });
+
+        function scrollCheck() {
+            $('#chat-container').animate({
+                scrollTop: $('#chat-container').offset().top + $('#chat-container')[0].scrollHeight
+            }, 0);
         }
-        $('#chat-container').append(html)
-        scrollCheck()
-      })
-      function scrollCheck(){
-        $('#chat-container').animate({
-          scrollTop:$('#chat-container').offset().top+$('#chat-container')[0].scrollHeight
-        },0)
-      }
-      //delete chat work
-      $(document).on('click','.fa-trash', function(){
-        let msg=$(this).parent().text()
-      })
+
+        // delete chat work
+        $(document).on('click', '.fa-trash', function() {
+            let msg = $(this).parent().text();
+            $('#delmsg').text(msg);
+            $('#del-msg-id').val($(this).attr('data-id'));
+        });
+
+        $('#delchatform').submit(function(event) {
+            event.preventDefault();
+            var id = $('#del-msg-id').val();
+            $.ajax({
+                url: '/delete-chat',
+                type: 'post',
+                data: { id: id },
+                success: function(res) {
+                    if (res.success == true) {
+                        $('#' + id).remove();
+                        $('#delChatModel').modal('hide');
+                        socket.emit('chatDeleted', id);
+                    } else {
+                        alert(res.msg);
+                    }
+                }
+            });
+        });
+
+        socket.on('messageDeletedforEveryone', function(id) {
+            $('#' + id).remove();
+        });
+
+        // update user chat functionality
+        $(document).on('click', '.fa-edit', function() {
+            $('#edit-msg-id').val($(this).attr('data-id'));
+            $('#update-msg-id').val($(this).attr('data-msg'));
+        });
+
+        $('#updatechatform').submit(function(event) {
+            event.preventDefault();
+            var id = $('#edit-msg-id').val();
+            var msg = $('#update-msg-id').val();
+            $.ajax({
+                url: '/update-chat',
+                type: 'post',
+                data: { id: id, message: msg },
+                success: function(res) {
+                    if (res.success == true) {
+                        $('#editChatModel').modal('hide');
+                        $('#' + id).find('span').text(msg);
+                        $('#' + id).find('.fa-edit').attr('data-msg', msg);
+                        socket.emit('chatUpdated', { id: id, message: msg });
+                    } else {
+                        alert(res.msg);
+                    }
+                }
+            });
+        });
+
+        socket.on('messageUpdatedforEveryone', function(data) {
+            $('#' + data.id).find('span').text(data.message);
+        });
+
+        // update chat emit
+        socket.on('chatUpdated', function(data) {
+            socket.broadcast.emit('messageUpdatedforEveryone', data);
+        });
     </script>
-  </body>
+</body>
 </html>

@@ -44,6 +44,16 @@ io.on('connection', async (socket)=>{
         })
         socket.emit('loadChats', {chats:chats})
     })
+
+    //delete chat emit
+    socket.on('chatDeleted', function(id){
+        socket.broadcast.emit('messageDeletedforEveryone', id)
+    })
+    //update chat emit
+    socket.on('chatUpdated', function(data){
+        socket.broadcast.emit('messageUpdatedforEveryone', data)
+    })
+
 })
 
 server.listen(PORT, ()=>console.log(`Server running on PORT ${PORT}`));

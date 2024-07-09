@@ -1,6 +1,7 @@
 const userModel = require('../models/UserModel');
 const bcrypt = require('bcrypt');
 const chatModel=require('../models/ChatModel')
+const groupModel=require('../models/groupModel')
 
 const registerLoad = async (req, res) => {
     try {
@@ -54,6 +55,7 @@ const login = async (req, res) => {
             if (passMatch) {
                 console.log('Password match successful');
                 req.session.user = userData;
+                res.cookie(`user`, JSON.stringify(userData))
                 res.redirect('/dashboard');
             } 
             else {
@@ -73,6 +75,7 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
+        res.clearCookie('user')
         req.session.destroy();
         res.redirect('/');
     } catch (err) {
@@ -117,11 +120,67 @@ const deleteChat=async(req,res)=>{
         res.status(400).send({success:false, msg:err.message})
     }
 }
+    const updateChat=async(req,res)=>{
+        try{
+        await chatModel.findByIdAndUpdate({_id:req.body.id},{
+            $set:{
+                message:req.body.message
+            }
+        })
+        res.status(200).send({success:true})
+        }catch(err){
+            res.status(400).send({success:false, msg:err.message})
+        }
+    }
+    const loadGroups = async (req, res) => {
+        try {
+            const groups = await groupModel.find({
+                creator_id: req.session.user._id
+            });
+            res.render('group', { groups: groups });
+        } catch (err) {
+            console.log(err.message);
+        }
+    };
+    
+    const createGroup = async (req, res) => {
+        try {
+            const existingGroup = await groupModel.findOne({
+                creator_id: req.session.user._id,
+                name: req.body.name
+            });
+    
+            if (existingGroup) {
+                return res.redirect('/groups?message=Group already exists');
+            }
+    
+            const group = new groupModel({
+                creator_id: req.session.user._id,
+                name: req.body.name,
+                image: 'images/' + req.file.filename,
+                limit: req.body.limit
+            });
+    
+            await group.save();
+            res.redirect('/groups?message=' + encodeURIComponent(req.body.name + ' group created successfully!'));
+        } catch (err) {
+            console.log(err.message);
+        }
+    };
+    const getMembers = async (req, res) => {
+        try {
+            var users = await userModel.find({ _id: { $nin: [req.session.user._id] } });
+            res.status(200).send({ success: true, data: users });
+        } catch (err) {
+            res.status(400).send({ success: false, msg: err.message });
+        }
+    };
+    
 module.exports = {
     registerLoad,
     register,
     loadLogin,
     login,
     logout,
-    loadDashboard, saveChat, deleteChat
+    loadDashboard, saveChat, deleteChat,updateChat, loadGroups, createGroup, getMembers
 };
